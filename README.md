@@ -1,125 +1,101 @@
-# GiveWeapon Plugin for Counter-Strike 2
+# GiveWeapon
 
-CS2 plugin that allows admins to give weapons to players via console command.
+Counter-Strike 2 plugin for [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp) that gives weapons to players at round start.
 
-## Requirements
+## Features
 
-- CounterStrikeSharp installed on your CS2 server
+- **Round Start Weapons** - Automatically give configured weapons to all players
+- **Knife Only Mode** - Strip all weapons and give only knife
+- **Team Filters** - Enable/disable for Terrorists and Counter-Terrorists separately
+- **Armor Support** - Give kevlar and helmet
+- **Custom Weapons** - Optionally allow players to keep purchased weapons
+- **Bomb Preservation** - Terrorists always keep their bomb on bomb defusal maps
+- **Disabled by Default** - Plugin is disabled until explicitly enabled
 
 ## Installation
 
-1. Copy `GiveWeapon/GiveWeapon.dll` to your CS2 server:
+1. Install [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp)
+2. Download `GiveWeapon.dll`
+3. Copy to your server:
    ```
-   csgo/addons/counterstrikesharp/plugins/
+   csgo/addons/counterstrikesharp/plugins/GiveWeapon/GiveWeapon.dll
    ```
+4. Restart the server
 
-## Usage
+## Configuration
 
-In server console, use the command:
+Config file location:
 
 ```
-gg_give_weapon <player_name|steam_id> <weapon_name>
+csgo/addons/counterstrikesharp/configs/plugins/GiveWeapon/GiveWeapon.json
 ```
 
-You can identify players by:
-- **Player name** - exact or partial match (case insensitive)
-- **SteamID64** - the 17-digit Steam ID
+```json
+{
+  "enabled": false,
+  "round_start_weapons": ["weapon_ak47", "weapon_deagle"],
+  "allow_custom_weapons": false,
+  "knife_only_mode": false,
+  "give_to_terrorists": true,
+  "give_to_counter_terrorists": true
+}
+```
+
+| Option                       | Default                            | Description                             |
+| ---------------------------- | ---------------------------------- | --------------------------------------- |
+| `enabled`                    | `false`                            | Enable/disable the plugin               |
+| `round_start_weapons`        | `["weapon_ak47", "weapon_deagle"]` | Weapons to give at round start          |
+| `allow_custom_weapons`       | `false`                            | Allow players to keep purchased weapons |
+| `knife_only_mode`            | `false`                            | Give only knife                         |
+| `give_to_terrorists`         | `true`                             | Give weapons to Terrorists              |
+| `give_to_counter_terrorists` | `true`                             | Give weapons to Counter-Terrorists      |
+
+## Commands
+
+| Command                   | Usage                               | Description                    |
+| ------------------------- | ----------------------------------- | ------------------------------ |
+| `gg_plugin`               | `gg_plugin <1/0>`                   | Enable/disable the plugin      |
+| `gg_set_round_weapons`    | `gg_set_round_weapons <weapons>`    | Set round start weapons        |
+| `gg_give_weapon`          | `gg_give_weapon <target> <weapons>` | Give weapon(s) to player(s)    |
+| `gg_knife_only`           | `gg_knife_only <1/0>`               | Enable/disable knife only mode |
+| `gg_allow_custom_weapons` | `gg_allow_custom_weapons <1/0>`     | Allow purchased weapons        |
+| `gg_status`               | `gg_status`                         | Show current settings          |
+
+### Target Selectors
+
+`@all`, `@t`, `@ct`, `@alive`, `@dead`, `<name>`, `<steamid>`
 
 ### Examples
 
 ```
-# By player name
-gg_give_weapon Player123 weapon_famas
-gg_give_weapon Player123 weapon_ak47
-gg_give_weapon Player123 famas          # "weapon_" prefix is optional
-
-# By SteamID64
-gg_give_weapon 76561198012345678 weapon_awp
-gg_give_weapon 76561198012345678 deagle
+gg_plugin 1
+gg_set_round_weapons ak47,deagle,assaultsuit
+gg_give_weapon @all awp
+gg_knife_only 1
 ```
 
-## Console Output
+## Supported Weapons
 
-The plugin provides detailed console output for all operations:
+**Primary:** `ak47`, `m4a1`, `m4a1_silencer`, `famas`, `galilar`, `aug`, `sg556`, `mp9`, `mac10`, `mp7`, `mp5sd`, `ump45`, `p90`, `bizon`, `nova`, `xm1014`, `sawedoff`, `mag7`, `m249`, `negev`, `awp`, `ssg08`, `scar20`, `g3sg1`
 
-### Success example:
-```
-[GiveWeapon] Command received: gg_give_weapon
-[GiveWeapon] Target: 'Player123', Weapon: 'weapon_famas'
-[GiveWeapon] Searching by name: 'Player123'
-[GiveWeapon] Found exact name match: Player123
-[GiveWeapon] Found player: Player123 (SteamID: 76561198012345678)
-[GiveWeapon] SUCCESS: Gave 'weapon_famas' to 'Player123' (SteamID: 76561198012345678)
-```
+**Secondary:** `glock`, `usp_silencer`, `hkp2000`, `p250`, `fiveseven`, `tec9`, `cz75a`, `deagle`, `revolver`, `elite`
 
-### Error examples:
-```
-[GiveWeapon] ERROR: Player 'UnknownPlayer' not found!
-[GiveWeapon] ERROR: Player 'Player123' is not alive!
-[GiveWeapon] ERROR: Invalid weapon name 'weapon_invalid'!
-```
+**Grenades:** `hegrenade`, `flashbang`, `smokegrenade`, `molotov`, `incgrenade`, `decoy`
 
-## Available Weapons
+**Armor:** `kevlar`, `assaultsuit`
 
-### Rifles
-- `weapon_ak47` - AK-47
-- `weapon_m4a1` - M4A1
-- `weapon_m4a1_silencer` - M4A1-S
-- `weapon_famas` - FAMAS
-- `weapon_galilar` - Galil AR
-- `weapon_aug` - AUG
-- `weapon_sg556` - SG 553
+> Weapon names work with or without `weapon_` prefix
 
-### SMGs
-- `weapon_mp9` - MP9
-- `weapon_mac10` - MAC-10
-- `weapon_mp7` - MP7
-- `weapon_mp5sd` - MP5-SD
-- `weapon_ump45` - UMP-45
-- `weapon_p90` - P90
-- `weapon_bizon` - PP-Bizon
+## Notes
 
-### Shotguns
-- `weapon_nova` - Nova
-- `weapon_xm1014` - XM1014
-- `weapon_sawedoff` - Sawed-Off
-- `weapon_mag7` - MAG-7
+- Plugin is **disabled by default**
+- **Bomb is always preserved** - T players keep their bomb
+- Late spawning players also receive the loadout
 
-### Machine Guns
-- `weapon_m249` - M249
-- `weapon_negev` - Negev
+## Requirements
 
-### Pistols
-- `weapon_glock` - Glock-18
-- `weapon_usp_silencer` - USP-S
-- `weapon_hkp2000` - P2000
-- `weapon_p250` - P250
-- `weapon_fiveseven` - Five-SeveN
-- `weapon_tec9` - Tec-9
-- `weapon_cz75a` - CZ75-Auto
-- `weapon_deagle` - Desert Eagle
-- `weapon_revolver` - R8 Revolver
-- `weapon_elite` - Dual Berettas
-
-### Sniper Rifles
-- `weapon_awp` - AWP
-- `weapon_ssg08` - SSG 08
-- `weapon_scar20` - SCAR-20
-- `weapon_g3sg1` - G3SG1
-
-### Equipment
-- `weapon_hegrenade` - HE Grenade
-- `weapon_flashbang` - Flashbang
-- `weapon_smokegrenade` - Smoke Grenade
-- `weapon_molotov` - Molotov
-- `weapon_incgrenade` - Incendiary Grenade
-- `weapon_decoy` - Decoy Grenade
-- `weapon_knife` - Knife
-- `weapon_taser` - Zeus x27
-
-## Permissions
-
-This command requires `@css/cheats` permission. Make sure the admin executing the command has this permission in the CounterStrikeSharp admin config.
+- Counter-Strike 2 Dedicated Server
+- [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp)
 
 ## License
 
